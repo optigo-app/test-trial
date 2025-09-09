@@ -1,22 +1,24 @@
-import React from "react";
+
+"use client"
+import { Box } from "@mui/material";
+import React, { useEffect } from "react";
 
 const VideoSection = () => {
-
     return (
-        <div style={{ minHeight: "550px", padding: "10px" }}>
+        
+        <Box sx={{ minHeight: "550px", padding: "10px" }}>
             <video
                 autoPlay
                 muted
                 playsInline
                 controls={false}
                 loop
-                style={{ width: "100%", height: "auto" }}
                 poster="/homepageVideoPoster.webp"
                 disablePictureInPicture
             >
                 <source src="/homepagemainvideo.webm" type="video/webm" />
             </video>
-        </div>
+        </Box>
     );
 };
 
