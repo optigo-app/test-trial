@@ -1,9 +1,12 @@
 "use client";
 
-import { Box, Typography, Button, Chip, Divider, Grid, Paper } from "@mui/material";
+import { Box, Typography, Button, Chip, Divider, Grid, Paper, CircularProgress } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Image from "next/image";
 import { getDynamicImages } from "@/utils/apis/ProductList";
+import { useQuery } from "@tanstack/react-query";
+import { GetDetailProduct } from "@/utils/apis/DetailProduct";
+import { useState, useEffect } from "react";
 
 // ---- Styled Wrappers ----
 const Container = styled(Box)(({ theme }) => ({
@@ -53,16 +56,41 @@ const MetaRow = styled(Box)(({ theme }) => ({
 
 // ---- Component ----
 const DetailClientComponents = ({ product }) => {
-  const imageUrl =
-    getDynamicImages(product.designno, product.DefaultImageName) || "/placeholder.png";
+  const { autocode, designno, MetalTypeid } = product;
+  const [queryStart, setQueryStart] = useState(null);
+  const [queryTime, setQueryTime] = useState(null);
+
+  const { data, isFetching, isLoading } = useQuery({
+    queryKey: ["product", autocode, designno, MetalTypeid],
+    queryFn: async () => {
+      setQueryStart(performance.now());
+      const res = await GetDetailProduct({ autocode, designno, MetalTypeid });
+      console.log("🚀 ~ DetailClientComponents ~ res:", res)
+      setQueryTime(performance.now() - (queryStart || performance.now()));
+      console.log("🚀 ~ DetailClientComponents ~ performance.now():", performance.now())
+      return res;
+    },
+    initialData: { rd: [product] }, // use server data first
+    staleTime: 1000 * 60 * 5, // 5min
+    refetchOnWindowFocus: true,
+  });
+
+  const productData = data?.rd?.[0];
+  const imageUrl = getDynamicImages(product.designno, product.DefaultImageName) || "/placeholder.png";
 
   return (
     <Container>
       {/* Left: Product Image */}
       <ImageBox>
+        {isFetching && (
+          <CircularProgress
+            size={40}
+            sx={{ position: "absolute", color: "primary.main" }}
+          />
+        )}
         <Image
           src={imageUrl}
-          alt={product.TitleLine}
+          alt={productData?.TitleLine}
           width={500}
           height={500}
           style={{ objectFit: "contain" }}
@@ -73,21 +101,34 @@ const DetailClientComponents = ({ product }) => {
       <InfoSection>
         <Box>
           <Typography variant="h5" fontWeight={600}>
-            {product.TitleLine}
+            {productData?.TitleLine}
           </Typography>
           <Typography variant="body2" color="text.secondary" mt={0.5}>
-            Design No: {product.designno}
+            Design No: {productData?.designno}
           </Typography>
         </Box>
 
         <Box display="flex" alignItems="center" gap={1}>
-          {product.IsBestSeller ? <Chip label="Best Seller" color="primary" /> : null}
-          {product.IsTrending ? <Chip label="Trending" color="secondary" /> : null}
-          {product.IsNewArrival ? <Chip label="New Arrival" variant="outlined" /> : null}
-          {product.IsInReadyStock ? <Chip label="In Stock" color="success" /> : <Chip label="Made to Order" />}
+          {productData?.IsBestSeller ? <Chip label="Best Seller" color="primary" /> : null}
+          {productData?.IsTrending ? <Chip label="Trending" color="secondary" /> : null}
+          {productData?.IsNewArrival ? <Chip label="New Arrival" variant="outlined" /> : null}
+          {productData?.IsInReadyStock ? (
+            <Chip label="In Stock" color="success" />
+          ) : (
+            <Chip label="Made to Order" />
+          )}
         </Box>
 
-        <PriceTag>₹{product.UnitCostWithMarkUpIncTax.toLocaleString()}</PriceTag>
+        <PriceTag>
+          ₹{productData?.UnitCostWithMarkUpIncTax?.toLocaleString()}
+        </PriceTag>
+
+        {/* Show query time if available */}
+        {queryTime && (
+          <Typography variant="caption" color="text.secondary">
+            Loaded in {Math.round(queryTime)} ms
+          </Typography>
+        )}
 
         <Divider />
 
@@ -95,30 +136,34 @@ const DetailClientComponents = ({ product }) => {
           <Grid item xs={12} sm={6}>
             <MetaRow>
               <strong>Collection</strong>
-              <span>{product.collection}</span>
+              <span>{productData?.collection}</span>
             </MetaRow>
             <MetaRow>
               <strong>Category</strong>
-              <span>{product.category}</span>
+              <span>{productData?.category}</span>
             </MetaRow>
             <MetaRow>
               <strong>Style</strong>
-              <span>{product.style}</span>
+              <span>{productData?.style}</span>
             </MetaRow>
           </Grid>
 
           <Grid item xs={12} sm={6}>
             <MetaRow>
               <strong>Metal</strong>
-              <span>{product.MetalTypePurity}</span>
+              <span>{productData?.MetalTypePurity}</span>
             </MetaRow>
             <MetaRow>
               <strong>Weight</strong>
-              <span>{product.Nwt} g</span>
+              <span>{productData?.Nwt} g</span>
             </MetaRow>
             <MetaRow>
               <strong>Diamond</strong>
-              <span>{product.Dwt ? `${product.Dwt} ct (${product.Dpcs} pcs)` : "—"}</span>
+              <span>
+                {productData?.Dwt
+                  ? `${productData.Dwt} ct (${productData.Dpcs} pcs)`
+                  : "—"}
+              </span>
             </MetaRow>
           </Grid>
         </Grid>

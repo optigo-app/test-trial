@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import TanstackQueryclient from "./clients/TanStackQuery";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +40,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <TanstackQueryclient>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
+      </TanstackQueryclient>
     </html>
   );
 }

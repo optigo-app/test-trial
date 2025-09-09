@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 
 const getCachedDetailProduct = cache(GetDetailProduct);
 
+// --- SSR Metadata ---
 export async function generateMetadata({ params }) {
   const { slug } = params;
   const slugString = Array.isArray(slug) ? slug[0] : slug;
@@ -34,14 +35,19 @@ export async function generateMetadata({ params }) {
     return { title: "Product Not Found", description: "This product does not exist." };
   }
 
-  const imageUrl = getDynamicImages(product.designno, product.DefaultImageName) || "/placeholder.png";
+  const imageUrl =
+    getDynamicImages(product.designno, product.DefaultImageName) || "/placeholder.png";
 
   return {
     title: `${product.TitleLine || product.designno} | Daily Wear Collection`,
-    description: product.description?.trim() || `Shop ${product.TitleLine || product.designno} in ${product.collection} - ${product.category}. Made with ${product.MetalTypePurity}.`,
+    description:
+      product.description?.trim() ||
+      `Shop ${product.TitleLine || product.designno} in ${product.collection} - ${product.category}. Made with ${product.MetalTypePurity}.`,
     openGraph: {
       title: `${product.TitleLine || product.designno} | Daily Wear Collection`,
-      description: product.description?.trim() || `Explore ${product.TitleLine || product.designno} crafted in ${product.MetalTypePurity}.`,
+      description:
+        product.description?.trim() ||
+        `Explore ${product.TitleLine || product.designno} crafted in ${product.MetalTypePurity}.`,
       url: `${baseUrl}/p/${slugString}`,
       type: "website",
       images: [
@@ -57,7 +63,9 @@ export async function generateMetadata({ params }) {
     twitter: {
       card: "summary_large_image",
       title: `${product.TitleLine || product.designno}`,
-      description: product.description?.trim() || `Check out ${product.TitleLine || product.designno} in ${product.MetalTypePurity}.`,
+      description:
+        product.description?.trim() ||
+        `Check out ${product.TitleLine || product.designno} in ${product.MetalTypePurity}.`,
       images: [imageUrl],
     },
     other: {
@@ -69,8 +77,9 @@ export async function generateMetadata({ params }) {
   };
 }
 
+// --- Product Page ---
 const ProductDetailPage = async ({ params }) => {
-  const { slug } = params;
+  const { slug } = await params;
   const slugString = Array.isArray(slug) ? slug[0] : slug;
 
   const [autocodeRaw, designnoRaw, metalidRaw] = slugString?.split("-") || [];
@@ -92,6 +101,8 @@ const ProductDetailPage = async ({ params }) => {
   if (!product) {
     return <Typography variant="h6">Product not found</Typography>;
   }
+
+  // serialize to avoid Next serialization issues
   const safeProduct = JSON.parse(JSON.stringify(product));
 
   return <DetailClientComponents product={safeProduct} />;
