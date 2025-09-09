@@ -1,17 +1,5 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ThemeRegistry from "./themeRegistry";
-import TanstackQueryclient from "./clients/TanStackQuery";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata = {
   title: "Optigo Apps | Cloud ERP for Diamond and Jewellery",
@@ -41,11 +29,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <TanstackQueryclient>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ThemeRegistry>{children}</ThemeRegistry>
-      </body>
-      </TanstackQueryclient>
     </html>
   );
 }

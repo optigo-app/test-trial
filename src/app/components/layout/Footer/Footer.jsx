@@ -13,6 +13,7 @@ import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 import CloseIcon from "@mui/icons-material/Close"; // as X icon placeholder
 
 export default function Footer({theme, pageType}) {
+    return <></>
     return (
         <Box
             component="footer"

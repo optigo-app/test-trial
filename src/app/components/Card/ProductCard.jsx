@@ -24,7 +24,7 @@ const ProductCard = ({ product }) => {
       }}
       onClick={handleMouseEnter}>
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", p: 2 }}>
-        <Image src={getDynamicImages(product.designno) || "/placeholder.png"} alt={"product.designname" + Math.random()} width={300} height={300} style={{ objectFit: "contain", borderRadius: 4 }} />
+        <Image src={getDynamicImages(product.designno) || "/placeholder.png"} alt={`${product.designname}`} width={300} height={300} style={{ objectFit: "contain", borderRadius: 4 }} />
         <Typography variant="h6" mt={1}>
           {product.designname}
         </Typography>
