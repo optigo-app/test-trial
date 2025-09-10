@@ -22,12 +22,11 @@ export default function ThemeRegistry({ children }) {
     return (
         <CacheProvider value={clientSideEmotionCache}>
             <TanstackQueryclient>
-                <body className={`${geistSans.variable} ${geistMono.variable}`}>
-                    <CssBaseline />
-                    <HydrationFix />
-
+                <CssBaseline />
+                <HydrationFix />
+                <div className={`${geistSans.variable} ${geistMono.variable}`}>
                     {children}
-                </body>
+                </div>
             </TanstackQueryclient>
         </CacheProvider>
     );

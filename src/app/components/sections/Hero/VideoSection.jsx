@@ -1,25 +1,21 @@
-
-"use client"
 import { Box } from "@mui/material";
-import React, { useEffect } from "react";
 
-const VideoSection = () => {
-    return (
-        
-        <Box sx={{ minHeight: "550px", padding: "10px" }}>
-            <video
-                autoPlay
-                muted
-                playsInline
-                controls={false}
-                loop
-                poster="/homepageVideoPoster.webp"
-                disablePictureInPicture
-            >
-                <source src="/homepagemainvideo.webm" type="video/webm" />
-            </video>
-        </Box>
-    );
-};
-
-export default VideoSection;
+export default function VideoSection() {
+  return (
+    <Box component="section" sx={{ minHeight: 550, p: 2 }}>
+      <video
+        autoPlay
+        muted
+        playsInline
+        loop
+        controls={false}
+        poster="/homepageVideoPoster.webp"
+        disablePictureInPicture
+        style={{ width: "100%", height: "auto", display: "block" }}
+      >
+        <source src="/homepagemainvideo.webm" type="video/webm" />
+        Your browser does not support the video tag.
+      </video>
+    </Box>
+  );
+}
